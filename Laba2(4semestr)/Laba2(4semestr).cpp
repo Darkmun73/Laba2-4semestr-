@@ -131,6 +131,7 @@ bool operator <(Student& l, Student& r)
     }
 }
 
+//Из номера телефона в строке l вычитаем номер телефона в строке r
 int minusPhoneNum(string l, string r)
 {
     l.erase(0, 3);
@@ -140,35 +141,8 @@ int minusPhoneNum(string l, string r)
     return (lNum - rNum);
 }
 
-//Вывод
-void outStudents(ofstream& fout, Student* studentsWithFoundPattern, double time, size_t count)
-{
-    fout << time;
-    for (size_t i = 0; i < count; i++)
-    {
-        fout << "\n";
-        //studentsWithFoundPattern[i].bdate.dd < 10 ? '0' + to_string(day) : to_string(day)
-        fout << (studentsWithFoundPattern[i].bdate.dd < 10 ? '0' + to_string(studentsWithFoundPattern[i].bdate.dd) : to_string(studentsWithFoundPattern[i].bdate.dd)) << "." <<
-            (studentsWithFoundPattern[i].bdate.mm < 10 ? '0' + to_string(studentsWithFoundPattern[i].bdate.mm) : to_string(studentsWithFoundPattern[i].bdate.mm)) << "." <<
-            (studentsWithFoundPattern[i].bdate.yy) << " ";
-        int l = 23 - studentsWithFoundPattern[i].groupNum.size();
-        fout << studentsWithFoundPattern[i].groupNum;
-        for (size_t i = 0; i < l; i++)
-            fout << " ";
-        string fio = studentsWithFoundPattern[i].fio.f + " " + studentsWithFoundPattern[i].fio.i + " " + studentsWithFoundPattern[i].fio.o;
-        l = 31 - fio.size();
-        fout << fio;
-        for (size_t i = 0; i < l; i++)
-            fout << " ";
-        l = 47 - studentsWithFoundPattern[i].direct.size();
-        fout << studentsWithFoundPattern[i].direct;
-        for (size_t i = 0; i < l; i++)
-            fout << " ";
-        fout << studentsWithFoundPattern[i].phoneNum;
-    }
-}
 
-//сортировка выбором
+//Сортировка выбором
 void choiceSort(int n, Student*& stud)
 {
     // Перебираем каждый элемент массива (кроме последнего, он уже будет отсортирован к тому времени, когда мы до него доберемся)
@@ -229,6 +203,7 @@ void naiveSearchOut(Student* students, size_t size, string key)
     }
 }
 
+//Интерполяционный поиск
 void interpolationSearch(Student* students, size_t size, string key, vector<int>& stringNumbers, int& steps)
 {
     int low = 0;
@@ -236,32 +211,46 @@ void interpolationSearch(Student* students, size_t size, string key, vector<int>
     int mid;
     int temp1, temp2;
 
-    while ((students[high].phoneNum != students[low].phoneNum) && (key >= students[low].phoneNum) && (key <= students[high].phoneNum))
+    while ((key >= students[low].phoneNum) && (key <= students[high].phoneNum))
     {
         steps += 1;
-        mid = low + (minusPhoneNum(key, students[low].phoneNum) * (high - low) / minusPhoneNum(students[high].phoneNum, students[low].phoneNum));
 
-        if (students[mid].phoneNum < key)
-            low = mid + 1;
-        else if (students[mid].phoneNum > key)
-            high = mid - 1;
+        if (students[high].phoneNum == students[low].phoneNum)
+        {
+            stringNumbers.push_back(students[low].stringNum);
+            if (low == high)
+                return;
+            low += 1;
+        }
         else
         {
-            temp1 = mid;
-            while (students[temp1].phoneNum == key)
+            mid = low + (minusPhoneNum(key, students[low].phoneNum) * (high - low) / minusPhoneNum(students[high].phoneNum, students[low].phoneNum));
+
+            if (students[mid].phoneNum < key)
+                low = mid + 1;
+            else if (students[mid].phoneNum > key)
+                high = mid - 1;
+            else
             {
-                steps += 1;
-                stringNumbers.push_back(students[temp1].stringNum);
-                temp1 -= 1;
+                //так как требуется найти каждое вхождение, то:
+                //как нашли нужный элемент идем влево от него (от mid) по индексам, пока элементы равны ключу (т.к. это отсортированный массив, это будет работать)
+                //и сохраняем номера строк, потом начиная с mid идем вправо по индексам, пока элементы равны ключу, и сохраняем номера строк
+                temp1 = mid;
+                while (students[temp1].phoneNum == key)
+                {
+                    steps += 1;
+                    stringNumbers.push_back(students[temp1].stringNum);
+                    temp1 -= 1;
+                }
+                temp2 = mid + 1;
+                while (students[temp2].phoneNum == key)
+                {
+                    steps += 1;
+                    stringNumbers.push_back(students[temp2].stringNum);
+                    temp2 += 1;
+                }
+                return;
             }
-            temp2 = mid + 1;
-            while (students[temp2].phoneNum == key)
-            {
-                steps += 1;
-                stringNumbers.push_back(students[temp2].stringNum);
-                temp2 += 1;
-            }
-            return;
         }
     }
 }
@@ -273,7 +262,7 @@ void interpolationSearchOut(Student* students, size_t size, string key)
     interpolationSearch(students, size, key, stringNumbers, steps);
     size_t stringNumbersSize = stringNumbers.size();
 
-    cout << "Interpolation search" << endl;
+    cout << "Interpolation search:" << endl;
     if (stringNumbers.size() == 0)
     {
         cout << "String with search key not found." << endl
@@ -281,7 +270,7 @@ void interpolationSearchOut(Student* students, size_t size, string key)
     }
     else
     {
-        cout << "Found strings' numbers: " << stringNumbers[stringNumbersSize];
+        cout << "Found strings' numbers: " << stringNumbers[0];
         for (size_t i = 1; i < stringNumbersSize; i++)
         {
             cout << ", " << stringNumbers[i];
@@ -327,7 +316,7 @@ int main()
         record.clear();
     }
 
-    string key = "89145662040";
+    string key = "89145662039";
 
     naiveSearchOut(students, n, key);
 
