@@ -24,6 +24,7 @@
     <ProjectGuid>{5bed49fa-6c62-4753-b4e1-2678dc9b77bf}</ProjectGuid>
     <RootNamespace>Laba24semestr</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Laba6</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
