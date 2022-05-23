@@ -6,6 +6,7 @@
 #pragma intrinsic(__rdtsc)
 using namespace std;
 
+//Генератор "Студентов ДВФУ"
 void generate_input(size_t n, string out_fyle) {
     setlocale(LC_ALL, "rus");
     string lane;
@@ -29,7 +30,7 @@ void generate_input(size_t n, string out_fyle) {
     for (int i = 0; i < n; i++) {
         output << "\n";
         lane = "";
-        int phone1 = rand() % 900 + 100;
+        int phone1 = rand() % 900000 + 100000;
         int phone2 = rand() % 9000 + 1000;
         int month = rand() % 12 + 1;
         int day;
@@ -43,7 +44,7 @@ void generate_input(size_t n, string out_fyle) {
         int year = rand() % 4 + 2000;
         lane += FIO[rand() % 18] + ' ' + direct[rand() % 10] + ' ' + grp_num[rand() % 11];
         lane += ' ' + (day < 10 ? '0' + to_string(day) : to_string(day)) + '.'
-            + (month < 10 ? '0' + to_string(month) : to_string(month)) + '.' + to_string(year) + " 8914" + to_string(phone1) + to_string(phone2);
+            + (month < 10 ? '0' + to_string(month) : to_string(month)) + '.' + to_string(year) + " 8" + to_string(phone1) + to_string(phone2);
 
         output << lane;
     }
@@ -88,59 +89,9 @@ struct Student
     string direct;
     string groupNum;
     BirthDate bdate;
-    string phoneNum;
+    long long int phoneNum;
     int stringNum;
 };
-
-bool operator <(Student& l, Student& r)
-{
-    string tempL = l.fio.f + " " + l.fio.i + " " + l.fio.o;
-    string tempR = r.fio.f + " " + r.fio.i + " " + r.fio.o;
-
-    if (l.bdate.yy < r.bdate.yy)
-        return true;
-    else if (l.bdate.yy > r.bdate.yy)
-        return false;
-    else if (l.bdate.yy == r.bdate.yy)
-    {
-        if (l.bdate.mm < r.bdate.mm)
-            return true;
-        else if (l.bdate.mm > r.bdate.mm)
-            return false;
-        else if (l.bdate.mm == r.bdate.mm)
-        {
-            if (l.bdate.dd < r.bdate.dd)
-                return true;
-            else if (l.bdate.dd > r.bdate.dd)
-                return false;
-            else if (l.bdate.dd == r.bdate.dd)
-            {
-                if (l.groupNum < r.groupNum)
-                    return true;
-                else if (l.groupNum > r.groupNum)
-                    return false;
-                else if (l.groupNum == r.groupNum)
-                {
-                    if (tempL < tempR)
-                        return true;
-                    else if (tempL >= tempR)
-                        return false;
-                }
-            }
-        }
-    }
-}
-
-//Из номера телефона в строке l вычитаем номер телефона в строке r
-int minusPhoneNum(string l, string r)
-{
-    l.erase(0, 4);
-    r.erase(0, 4);
-    int lNum = stoi(l);
-    int rNum = stoi(r);
-    return (lNum - rNum);
-}
-
 
 //Сортировка выбором
 void choiceSort(int n, Student*& stud)
@@ -168,7 +119,7 @@ void choiceSort(int n, Student*& stud)
 }
 
 //Линейный поиск
-void linearSearch(Student* students, size_t size, string key, vector<int>& stringNumbers, int& steps)
+void linearSearch(Student* students, size_t size, long long int key, vector<int>& stringNumbers, int& steps)
 {
     for (size_t i = 0; i < size; i++)
     {
@@ -180,7 +131,7 @@ void linearSearch(Student* students, size_t size, string key, vector<int>& strin
     }
 }
 
-void linearSearchOut(Student* students, size_t size, string key)
+void linearSearchOut(Student* students, size_t size, long long int key)
 {
     vector<int> stringNumbers;
     int steps = 0;
@@ -204,7 +155,7 @@ void linearSearchOut(Student* students, size_t size, string key)
 }
 
 //Интерполяционный поиск
-void interpolationSearch(Student* students, size_t size, string key, vector<int>& stringNumbers, int& steps)
+void interpolationSearch(Student* students, size_t size, long long int key, vector<int>& stringNumbers, int& steps)
 {
     int low = 0;
     int high = size - 1;
@@ -213,18 +164,19 @@ void interpolationSearch(Student* students, size_t size, string key, vector<int>
 
     while ((key >= students[low].phoneNum) && (key <= students[high].phoneNum))
     {
-        steps += 1;
-
         if (students[high].phoneNum == students[low].phoneNum)
         {
             stringNumbers.push_back(students[low].stringNum);
             if (low == high)
+            {
+                steps += 1;
                 return;
+            }
             low += 1;
         }
         else
         {
-            mid = low + (minusPhoneNum(key, students[low].phoneNum) * (high - low) / minusPhoneNum(students[high].phoneNum, students[low].phoneNum));
+            mid = low + ((key - students[low].phoneNum) * (high - low) / (students[high].phoneNum - students[low].phoneNum));
 
             if (students[mid].phoneNum < key)
                 low = mid + 1;
@@ -252,10 +204,11 @@ void interpolationSearch(Student* students, size_t size, string key, vector<int>
                 return;
             }
         }
+        steps += 1;
     }
 }
 
-void interpolationSearchOut(Student* students, size_t size, string key)
+void interpolationSearchOut(Student* students, size_t size, long long int key)
 {
     vector<int> stringNumbers;
     int steps = 0;
@@ -285,14 +238,9 @@ int main()
     string temp;
     vector<string> record;
     vector<string> sub_record;
-    //generate_input(50, "C:\\Users\\mrgam\\OneDrive - ДВФУ\\Документы\\repos\\Laba3(fix)\\Laba3(fix)\\In_DVFUStudents_50.txt");
     //generate_input(15, "In_DVFUStudents_15.txt");
-    //generate_input(100000, "In_DVFUStudents_worst1.txt");
-    //generate_input(5000, "In_DVFUStudents_5000.txt");
-    //generate_input(50000, "In_DVFUStudents_50000.txt");
-    //generate_input(1000000, "DVFUStudents6.txt");
 
-    ifstream fi1("In_DVFUStudents_15.txt");
+    ifstream fi1("In_DVFUStudents_15_allsame.txt");
 
     getline(fi1, temp);
     const int n = stoi(temp);
@@ -310,13 +258,13 @@ int main()
         students[i].bdate.dd = stoi(sub_record[0]);
         students[i].bdate.mm = stoi(sub_record[1]);
         students[i].bdate.yy = stoi(sub_record[2]);
-        students[i].phoneNum = record[6];
+        students[i].phoneNum = stoll(record[6]);
         students[i].stringNum = i + 2;
         sub_record.clear();
         record.clear();
     }
 
-    string key = "89140000000"; //искомый ключ
+    long long int key = 89143164055; //искомый ключ
 
     linearSearchOut(students, n, key); //Линейный поиск
     cout << endl;
