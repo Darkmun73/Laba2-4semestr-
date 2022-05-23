@@ -134,8 +134,8 @@ bool operator <(Student& l, Student& r)
 //Из номера телефона в строке l вычитаем номер телефона в строке r
 int minusPhoneNum(string l, string r)
 {
-    l.erase(0, 3);
-    r.erase(0, 3);
+    l.erase(0, 4);
+    r.erase(0, 4);
     int lNum = stoi(l);
     int rNum = stoi(r);
     return (lNum - rNum);
@@ -168,7 +168,7 @@ void choiceSort(int n, Student*& stud)
 }
 
 //Линейный поиск
-void naiveSearch(Student* students, size_t size, string key, vector<int>& stringNumbers, int& steps)
+void linearSearch(Student* students, size_t size, string key, vector<int>& stringNumbers, int& steps)
 {
     for (size_t i = 0; i < size; i++)
     {
@@ -180,13 +180,13 @@ void naiveSearch(Student* students, size_t size, string key, vector<int>& string
     }
 }
 
-void naiveSearchOut(Student* students, size_t size, string key)
+void linearSearchOut(Student* students, size_t size, string key)
 {
     vector<int> stringNumbers;
     int steps = 0;
-    naiveSearch(students, size, key, stringNumbers, steps);
+    linearSearch(students, size, key, stringNumbers, steps);
     size_t stringNumbersSize = stringNumbers.size();
-    cout << "Naive search:" << endl;
+    cout << "Linear search:" << endl;
     if (stringNumbers.size() == 0)
     {
         cout << "String with search key not found." << endl
@@ -286,13 +286,13 @@ int main()
     vector<string> record;
     vector<string> sub_record;
     //generate_input(50, "C:\\Users\\mrgam\\OneDrive - ДВФУ\\Документы\\repos\\Laba3(fix)\\Laba3(fix)\\In_DVFUStudents_50.txt");
-    //generate_input(10, "In_DVFUStudents_10.txt");
+    //generate_input(15, "In_DVFUStudents_15.txt");
     //generate_input(100000, "In_DVFUStudents_worst1.txt");
     //generate_input(5000, "In_DVFUStudents_5000.txt");
     //generate_input(50000, "In_DVFUStudents_50000.txt");
     //generate_input(1000000, "DVFUStudents6.txt");
 
-    ifstream fi1("In_DVFUStudents_10.txt");
+    ifstream fi1("In_DVFUStudents_15.txt");
 
     getline(fi1, temp);
     const int n = stoi(temp);
@@ -316,21 +316,14 @@ int main()
         record.clear();
     }
 
-    string key = "89145662039";
+    string key = "89140000000"; //искомый ключ
 
-    naiveSearchOut(students, n, key);
-
+    linearSearchOut(students, n, key); //Линейный поиск
     cout << endl;
 
-    choiceSort(n, students);
-    interpolationSearchOut(students, n, key);
+    choiceSort(n, students);                   //Сортировка массива и
+    interpolationSearchOut(students, n, key);  //последующий интерполяционный поиск
 
-    //Вывод
-    //outStudents(fout1, studentsWithFoundPattern, t1, count);
-
-
-    //Вывод
-    //outStudents(fout2, studentsWithFoundPattern, t1, count);
     delete[] students;
     fi1.close();
 }
